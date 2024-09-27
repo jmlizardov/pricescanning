@@ -1,5 +1,6 @@
 const barcodeLinks = {
     "7591002000011": "https://dataprecio.com/?q=harina+pan+1+kg",
+    "7591082000048": "https://dataprecio.com/?q=soda+puig",
     // Puedes añadir más códigos de barras y sus respectivos enlaces aquí
     // "código_de_barras": "url",
 };
