@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escáner de Códigos de Barras</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Escáner de Códigos de Barras</h1>
+    <p id="instructions">Alinea el código de barras en el área de escaneo.</p>
+    <div id="interactive">
+        <div id="scanner-line"></div>
+    </div>
+    <input type="text" id="barcode" placeholder="Código de barras" readonly />
+    <div class="button-container">
+        <button id="retry-btn" style="display: none;">Reintentar Escaneo</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
