@@ -1,9 +1,12 @@
 const barcodeLinks = {
     "7591002000011": "https://dataprecio.com/?q=harina+pan+1+kg",
     "7591082000048": "https://dataprecio.com/?q=soda+puig",
-    // Puedes añadir más códigos de barras y sus respectivos enlaces aquí
-    // "código_de_barras": "url",
+    "7591082010047": "https://dataprecio.com/?q=soda+puig",
+    
+    // Agrega más códigos de barras y enlaces aquí
 };
+
+let isScanning = false; // Controla el estado de escaneo
 
 function startScanning() {
     Quagga.init({
@@ -12,11 +15,12 @@ function startScanning() {
             type: "LiveStream",
             target: document.querySelector('#interactive'),
             constraints: {
-                facingMode: "environment" // Usar la cámara trasera del dispositivo
+                facingMode: "environment"
             }
         },
         decoder: {
-            readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader"]
+            readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader"],
+            multiple: false // Asegura que no se detecten múltiples códigos a la vez
         }
     }, (err) => {
         if (err) {
@@ -27,19 +31,28 @@ function startScanning() {
     });
 
     Quagga.onDetected((data) => {
-        const codigo = data.codeResult.code;
-        document.getElementById('barcode').value = codigo;
-        console.log("Código escaneado:", codigo);
+        if (isScanning) return; // Si ya se está escaneando, no hacer nada
+        isScanning = true; // Cambiar estado de escaneo
 
-        // Redirigir según el código de barras
+        const codigo = data.codeResult.code;
+
+        // Comprobar si el código es válido
         if (barcodeLinks[codigo]) {
-            window.location.href = barcodeLinks[codigo]; // Redirigir a la URL correspondiente
+            const link = barcodeLinks[codigo];
+            document.getElementById('barcode').value = codigo;
+            document.getElementById('result-iframe').src = link; // Actualizar el src del iframe
+            document.getElementById('result-container').style.display = 'block'; // Mostrar el contenedor del iframe
         } else {
-            alert("Código no reconocido. Intenta de nuevo."); // Mensaje si no hay enlace
+            // Manejo de errores si el código no es reconocido
+            alert("Código no reconocido. Intenta de nuevo.");
         }
 
-        Quagga.stop();
-        document.getElementById('retry-btn').style.display = 'inline-block'; // Mostrar botón de reintentar
+        // Detener el escáner y permitir un nuevo escaneo después de un breve retraso
+        setTimeout(() => {
+            Quagga.stop();
+            isScanning = false; // Restablecer el estado de escaneo
+            document.getElementById('retry-btn').style.display = 'inline-block'; // Mostrar botón de reintentar
+        }, 1500); // Tiempo de espera antes de reiniciar el escáner
     });
 }
 
@@ -48,5 +61,6 @@ document.addEventListener('DOMContentLoaded', startScanning);
 
 document.getElementById('retry-btn').addEventListener('click', () => {
     document.getElementById('barcode').value = ''; // Limpiar campo
+    document.getElementById('result-container').style.display = 'none'; // Ocultar el iframe
     startScanning(); // Iniciar nuevo escaneo
 });
